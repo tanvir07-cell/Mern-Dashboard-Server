@@ -27,9 +27,37 @@ async function run() {
       const product = req.body;
       // validation if user post data with name and product price in client side:
       if (!product.name || !product.price) {
-        return;
+        return res.send({
+          success: false,
+          error: "Please Provide a valid information",
+        });
       }
       const result = await productCollections.insertOne(product);
+      res.send({
+        success: true,
+        message: `Successfully inserted ${product.name}`,
+      });
+    });
+
+    // get data to the /products api endpoint:
+    app.get("/products", async (req, res) => {
+      // frontend theke jei query ti asbe seti thakbe string e! tai eke number e convert korte hobe:
+      const limit = parseInt(req.query.limit);
+      const pageNumber = parseInt(req.query.pageNumber);
+
+      const cursor = productCollections.find({});
+      const product = await cursor
+        .skip(limit * pageNumber)
+        .limit(limit)
+        .toArray();
+
+      if (!product.length) {
+        return res.send({
+          success: false,
+          error: "Products not get to the server!",
+        });
+      }
+      res.send({ success: true, data: product });
     });
   } finally {
   }
