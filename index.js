@@ -51,13 +51,16 @@ async function run() {
         .limit(limit)
         .toArray();
 
+      // backend e koyti data ase ta dekhar jonne:
+      const count = await productCollections.estimatedDocumentCount();
+
       if (!product.length) {
         return res.send({
           success: false,
           error: "Products not get to the server!",
         });
       }
-      res.send({ success: true, data: product });
+      res.send({ success: true, data: product, count: count });
     });
   } finally {
   }
